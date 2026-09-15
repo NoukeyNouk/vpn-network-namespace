@@ -1,0 +1,14 @@
+[Unit]
+Description=VPN Auto-Healing Watchdog (hy2-vpn)
+After=network-online.target sing-vpn.service sing-box.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/noukey/Documents/Mega_vpn
+ExecStart=/usr/bin/bash ./vpn-watchdog.sh
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

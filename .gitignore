@@ -1,0 +1,20 @@
+# Old AmneziaWG configs and keys
+*.conf
+.*.conf
+AmneziaVPN.conf
+awg0.conf
+.awg0.conf
+
+# Legacy AmneziaWG fix and hook scripts
+fix-awg.sh
+install-pacman-hook.sh
+install-service.sh
+
+# Archives and backup files
+*.zip
+mega_vpn.zip
+router_vpn/
+
+# Logs and temp files
+*.log
+*.tmp
