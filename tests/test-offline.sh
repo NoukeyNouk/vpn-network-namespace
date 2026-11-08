@@ -51,3 +51,12 @@ vpn_state=online
 check_once
 [[ $FAIL_COUNT == 0 && $recovery_calls == 1 ]]
 echo 'PASS: HTTP errors, fallback, stopped service, offline host, failure threshold, reset and syntax' 
+
+# Host guard must handle unnamed host, named VPN, and identification errors.
+ip() { return 0; }
+require_host_namespace
+ip() { echo hy2-vpn; }
+if require_host_namespace 2>/dev/null; then exit 1; fi
+ip() { return 1; }
+if require_host_namespace 2>/dev/null; then exit 1; fi
+echo 'PASS: host namespace guard'

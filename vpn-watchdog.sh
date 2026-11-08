@@ -2,11 +2,9 @@
 set -euo pipefail
 source "$(dirname -- "$(readlink -f -- "$0")")/vpn-common.sh"
 require_root
-# Host probes and recovery must run from PID 1's network namespace.
-if [[ $(readlink /proc/self/ns/net) != $(readlink /proc/1/ns/net) ]]; then
-  echo 'Run recovery from the host network namespace, not through run-vpn.' >&2
-  exit 1
-fi
+# systemd uses the host network by default. Reject manual execution in a
+# named namespace without inspecting PID 1 (which can be access-restricted).
+require_host_namespace
 install -d -m 0755 /run/mega-vpn
 FAIL_COUNT=0
 recover() (

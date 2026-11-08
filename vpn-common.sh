@@ -56,3 +56,15 @@ probe() {
   done
   return 1
 }
+
+require_host_namespace() {
+  local current_namespace
+  if ! current_namespace=$(ip netns identify "$$"); then
+    echo 'Cannot identify current network namespace; refusing recovery.' >&2
+    return 1
+  fi
+  if [[ -n $current_namespace ]]; then
+    echo "Run recovery from the host, not namespace $current_namespace." >&2
+    return 1
+  fi
+}
