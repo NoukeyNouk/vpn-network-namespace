@@ -1,7 +1,8 @@
 #!/bin/bash
 # run-vpn.sh
 
-NETNS="${NETNS:-hy2-vpn}"
+set -euo pipefail
+source "$(dirname -- "$(readlink -f -- "$0")")/vpn-common.sh"
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 <command> [args...]"
@@ -22,7 +23,7 @@ if [ "$CURRENT_NS" = "$NETNS" ]; then
   exec "$@"
 fi
 
-if ! ip netns list 2>/dev/null | grep -q "^$NETNS\b"; then
+if ! namespace_exists; then
   echo "Error: Namespace '$NETNS' does not exist."
   echo "Please start the service with: sudo systemctl start sing-vpn"
   echo "Or manually run: sudo ./setup-netns.sh"
@@ -35,16 +36,16 @@ if [ "$EUID" -eq 0 ]; then
   exec ip netns exec "$NETNS" "$@"
 else
   # Capture environment variables before sudo strips them
-  CUR_DISPLAY="$DISPLAY"
-  CUR_XAUTH="$XAUTHORITY"
-  CUR_WAYLAND="$WAYLAND_DISPLAY"
-  CUR_XDG="$XDG_RUNTIME_DIR"
-  CUR_DBUS="$DBUS_SESSION_BUS_ADDRESS"
+  CUR_DISPLAY="${DISPLAY:-}"
+  CUR_XAUTH="${XAUTHORITY:-}"
+  CUR_WAYLAND="${WAYLAND_DISPLAY:-}"
+  CUR_XDG="${XDG_RUNTIME_DIR:-}"
+  CUR_DBUS="${DBUS_SESSION_BUS_ADDRESS:-}"
 
   USER_ID=$(id -u)
   PULSE_SOCK="unix:/run/user/$USER_ID/pulse/native"
 
-  exec sudo ip netns exec "$NETNS" sudo -u "$USER" \
+  exec sudo ip netns exec "$NETNS" sudo -H -u "$(id -un)" \
     DISPLAY="$CUR_DISPLAY" \
     XAUTHORITY="$CUR_XAUTH" \
     WAYLAND_DISPLAY="$CUR_WAYLAND" \

@@ -1,14 +1,14 @@
 [Unit]
-Description=VPN Auto-Healing Watchdog (hy2-vpn)
-After=network-online.target sing-vpn.service sing-box.service
+Description=VPN connectivity monitor and rate-limited recovery
+After=network-online.target sing-vpn.service
 Wants=network-online.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/noukey/Documents/Mega_vpn
-ExecStart=/usr/bin/bash ./vpn-watchdog.sh
-Restart=always
+ExecStart=/usr/bin/bash /usr/local/lib/mega-vpn/vpn-watchdog.sh
+Restart=on-failure
 RestartSec=10s
+UMask=0022
 
 [Install]
 WantedBy=multi-user.target
