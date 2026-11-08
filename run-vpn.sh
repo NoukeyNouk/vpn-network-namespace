@@ -2,7 +2,16 @@
 # run-vpn.sh
 
 set -euo pipefail
-source "$(dirname -- "$(readlink -f -- "$0")")/vpn-common.sh"
+SCRIPT_DIR="$(dirname -- "$(readlink -f -- "$0")")"
+if [[ -r "$SCRIPT_DIR/vpn-common.sh" ]]; then
+  source "$SCRIPT_DIR/vpn-common.sh"
+elif [[ -r /usr/local/lib/mega-vpn/vpn-common.sh ]]; then
+  # Legacy /usr/bin/run-vpn may be a hard link, not a resolvable symlink.
+  source /usr/local/lib/mega-vpn/vpn-common.sh
+else
+  echo 'VPN support files not found. Install with install-services.sh.' >&2
+  exit 1
+fi
 
 if [ $# -eq 0 ]; then
   echo "Usage: $0 <command> [args...]"
