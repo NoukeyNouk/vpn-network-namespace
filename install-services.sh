@@ -3,6 +3,12 @@
 set -euo pipefail
 [[ $EUID == 0 ]] || { echo 'Run as root' >&2; exit 1; }
 DIR="$(cd -- "$(dirname -- "$(readlink -f -- "$0")")" && pwd)"
+# Refuse mixed ownership before writing anything. Migrate during maintenance.
+if systemctl is-active --quiet amnezia-vpn.service ||
+   systemctl is-enabled --quiet amnezia-vpn.service; then
+  echo 'Legacy amnezia-vpn.service is active or enabled; migrate it before installation.' >&2
+  exit 1
+fi
 for cmd in ip curl flock systemctl awk; do
   command -v "$cmd" >/dev/null || { echo "Missing dependency: $cmd" >&2; exit 1; }
 done
