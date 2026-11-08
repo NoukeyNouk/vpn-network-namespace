@@ -10,6 +10,12 @@ if [ $# -eq 0 ]; then
   exit 1
 fi
 
+# Codex workaround
+if [ "$1" = "codex" ]; then
+    shift
+    set -- codex -c "log_dir=\"$HOME/.codex/log\"" "$@"
+fi
+
 # Check if we are already inside the target namespace
 CURRENT_NS=$(ip netns identify $$ 2>/dev/null || true)
 if [ "$CURRENT_NS" = "$NETNS" ]; then
