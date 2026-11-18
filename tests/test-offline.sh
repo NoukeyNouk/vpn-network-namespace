@@ -21,9 +21,9 @@ curl() {
 # Never run project scripts: syntax parsing only.
 for script in ./*.sh hooks/*.sh tests/*.sh; do bash -n "$script"; done
 # Load only watchdog functions, skipping privileged initialization and entrypoint.
-source <(sed -n '/^FAIL_COUNT=0$/,/^case /p' vpn-watchdog.sh | sed '$d')
+source ./vpn-watchdog.sh
 systemctl() { [[ $service_state == active ]]; }
-probe() {
+health() {
   if [[ $1 == vpn ]]; then [[ $vpn_state == online ]];
   else [[ $host_state == online ]]; fi
 }
